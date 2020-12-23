@@ -1,10 +1,12 @@
 package com.iwom.theatre.reservation
 
 import com.iwom.theatre.reservation.event.ReservationPendingEvent
+import com.iwom.theatre.reservation.model.Reservation
 import com.iwom.theatre.reservation.request.CreateReservationRequest
 import com.iwom.theatre.reservation.service.ReservationService
 import org.apache.camel.Exchange
 import org.apache.camel.builder.RouteBuilder
+import org.apache.camel.model.dataformat.JsonLibrary
 import org.apache.camel.model.rest.RestBindingMode
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -46,28 +48,29 @@ class Router : RouteBuilder() {
       .type(CreateReservationRequest::class.java)
       .enableCORS(true)
       .to("direct:createReservation")
-      .to("direct:startReservationSaga")
 
     from("direct:createReservation")
       .routeId("createReservation")
       .tracing()
+      .onCompletion().to("direct:startReservationSaga").end()
       .process {
         it.message.body = service.example(it.message.getBody(CreateReservationRequest::class.java))
       }
       .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(201))
-      .
-
 
     from("direct:startReservationSaga")
       .routeId("startReservationSaga")
       .process {
-        val request = it.message.body as CreateReservationRequest
+        println(it.message.body::class.java)
+        println(it.message.body)
         it.message.body = ReservationPendingEvent(
-          id = request.id,
-          name = request.name,
-          creditCardNo = "ABCD"
+          id = 4,
+          name = "aa",
+          creditCardNo = "asd"
         )
       }
+      .marshal()
+      .json()
       .to("kafka:reservation_events?brokers=localhost:9092")
   }
 }
