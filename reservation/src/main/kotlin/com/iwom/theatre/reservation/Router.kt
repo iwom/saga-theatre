@@ -1,5 +1,6 @@
 package com.iwom.theatre.reservation
 
+import com.iwom.theatre.reservation.event.ReservationPendingEvent
 import com.iwom.theatre.reservation.request.CreateReservationRequest
 import com.iwom.theatre.reservation.service.ReservationService
 import org.apache.camel.Exchange
@@ -23,7 +24,8 @@ class Router : RouteBuilder() {
   lateinit var service: ReservationService
 
   override fun configure() {
-    restConfiguration().contextPath(contextPath)
+    restConfiguration()
+      .contextPath(contextPath)
       .port(serverPort)
       .enableCORS(true)
       .apiContextPath("/api-doc")
@@ -37,20 +39,35 @@ class Router : RouteBuilder() {
 
     rest("/api/").description("Reservation Service")
       .id("api-route")
-      .post("/bean")
+      .post("/reservations")
       .produces(MediaType.APPLICATION_JSON)
       .consumes(MediaType.APPLICATION_JSON)
       .bindingMode(RestBindingMode.auto)
       .type(CreateReservationRequest::class.java)
       .enableCORS(true)
       .to("direct:createReservation")
+      .to("direct:startReservationSaga")
 
     from("direct:createReservation")
-      .routeId("create-reservation")
+      .routeId("createReservation")
       .tracing()
       .process {
         it.message.body = service.example(it.message.getBody(CreateReservationRequest::class.java))
       }
       .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(201))
+      .
+
+
+    from("direct:startReservationSaga")
+      .routeId("startReservationSaga")
+      .process {
+        val request = it.message.body as CreateReservationRequest
+        it.message.body = ReservationPendingEvent(
+          id = request.id,
+          name = request.name,
+          creditCardNo = "ABCD"
+        )
+      }
+      .to("kafka:reservation_events?brokers=localhost:9092")
   }
 }

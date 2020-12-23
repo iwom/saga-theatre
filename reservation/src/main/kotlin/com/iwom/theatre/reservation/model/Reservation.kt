@@ -1,8 +1,17 @@
 package com.iwom.theatre.reservation.model
 
-import com.fasterxml.jackson.annotation.JsonProperty
-
 data class Reservation(
-  @JsonProperty("id") val id: Int,
-  @JsonProperty("name") val name: String
+  val id: Int,
+  val name: String,
+  val status: ReservationStatus = ReservationStatus.PENDING
 )
+
+enum class ReservationStatus(val value: Int) {
+  PENDING(1),
+  CONFIRMED(2),
+  DENIED(-1);
+
+  companion object {
+    val BY_VALUE = values().associateBy { it.value }
+  }
+}

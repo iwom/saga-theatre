@@ -1,18 +1,18 @@
 server:
-  port: 8000
+  port: 8010
 
-reservation:
+payment:
   api:
     v1: '/v1'
 
 camel:
   springboot:
     # The Camel context name
-    name: Reservation
+    name: Payment
 
 # Binding health checks to a different port
 management:
-  port: 8001
+  port: 8011
 
 # disable all management enpoints except health
 endpoints:
