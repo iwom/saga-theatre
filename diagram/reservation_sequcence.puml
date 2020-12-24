@@ -1,0 +1,51 @@
+@startuml
+actor user
+participant web_app
+participant gateway
+box "internal services"
+participant reservation
+participant customer
+participant payment
+end box
+
+
+user -> web_app: <<REST>> create reservation
+web_app -> gateway: <<REST>> create reservation
+gateway -> customer: <<SOAP>> fetch customer detail
+customer --> gateway: <<SOAP>> customer detail
+gateway -> reservation: <<REST>> create reservation
+reservation -> reservation: reserve seats
+note over reservation #white
+Reservation(status=PENDING)
+end note
+reservation --> gateway: <<REST>> success
+gateway --> web_app: <<REST>> success
+web_app --> user: <<REST>> view pending reservation
+group CreateReservationSaga
+    note over reservation
+    ReservationPendingEvent
+    end note
+    reservation o-> payment
+    payment -> payment: validate payment
+    alt payment successful
+        note over payment
+        PaymentSucceededEvent
+        end note
+        payment o-> reservation
+        note over reservation #lightgreen
+        Reservation(status=SUCCEEDED)
+        end note
+    else payment failed
+        note over payment
+        PaymentFailedEvent
+        end note
+        payment o-> reservation
+        reservation -> reservation: (compensate) unlock seats
+        note over reservation #FFAAAA
+        Reservation(status=FAILED)
+        end note
+    end
+end
+
+
+@enduml
