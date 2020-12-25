@@ -1,8 +1,12 @@
 package com.iwom.theatre.reservation
 
+import com.iwom.theatre.reservation.event.PaymentEvent
+import com.iwom.theatre.reservation.event.PaymentFailedEvent
+import com.iwom.theatre.reservation.event.PaymentSucceededEvent
 import com.iwom.theatre.reservation.event.ReservationPendingEvent
 import com.iwom.theatre.reservation.model.Reservation
 import com.iwom.theatre.reservation.request.CreateReservationRequest
+import com.iwom.theatre.reservation.service.MovieService
 import com.iwom.theatre.reservation.service.ReservationService
 import org.apache.camel.Exchange
 import org.apache.camel.builder.RouteBuilder
@@ -23,9 +27,13 @@ class Router : RouteBuilder() {
   lateinit var contextPath: String
 
   @Autowired
-  lateinit var service: ReservationService
+  lateinit var reservationService: ReservationService
+
+  @Autowired
+  lateinit var movieService: MovieService
 
   override fun configure() {
+
     restConfiguration()
       .contextPath(contextPath)
       .port(serverPort)
@@ -39,7 +47,8 @@ class Router : RouteBuilder() {
       .bindingMode(RestBindingMode.json)
       .dataFormatProperty("prettyPrint", "true")
 
-    rest("/api/").description("Reservation Service")
+    rest("/api/")
+      .description("Reservation Service")
       .id("api-route")
       .post("/reservations")
       .produces(MediaType.APPLICATION_JSON)
@@ -48,29 +57,64 @@ class Router : RouteBuilder() {
       .type(CreateReservationRequest::class.java)
       .enableCORS(true)
       .to("direct:createReservation")
+      .get("/reservations")
+      .produces(MediaType.APPLICATION_JSON)
+      .bindingMode(RestBindingMode.auto)
+      .enableCORS(true)
+      .to("direct:getReservations")
 
     from("direct:createReservation")
       .routeId("createReservation")
       .tracing()
-      .onCompletion().to("direct:startReservationSaga").end()
+      .onCompletion().onCompleteOnly().to("direct:startReservationSaga").end()
       .process {
-        it.message.body = service.example(it.message.getBody(CreateReservationRequest::class.java))
+        val request = it.message.body as CreateReservationRequest
+        val movie = movieService.getById(request.movieId)
+        val reservation = reservationService.create(movie, request.userId, request.seats)
+        it.message.body = reservation
       }
       .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(201))
 
+    from("direct:getReservations")
+      .routeId("getReservations")
+      .tracing()
+      .process {
+        it.message.body = reservationService.fetch()
+      }
+      .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(200))
+
     from("direct:startReservationSaga")
       .routeId("startReservationSaga")
+      .unmarshal()
+      .json(JsonLibrary.Jackson, Reservation::class.java)
       .process {
-        println(it.message.body::class.java)
-        println(it.message.body)
+        val reservation = it.message.body as Reservation
         it.message.body = ReservationPendingEvent(
-          id = 4,
-          name = "aa",
-          creditCardNo = "asd"
+          id = reservation.id,
+          userId = reservation.userId
         )
       }
       .marshal()
       .json()
       .to("kafka:reservation_events?brokers=localhost:9092")
+
+    from("kafka:payment_succeeded_events?brokers=localhost:9092")
+      .routeId("paymentSucceeded")
+      .unmarshal()
+      .json(JsonLibrary.Jackson, PaymentSucceededEvent::class.java)
+      .to("direct:finishReservationSaga")
+
+    from("kafka:payment_failed_events?brokers=localhost:9092")
+      .routeId("paymentFailed")
+      .unmarshal()
+      .json(JsonLibrary.Jackson, PaymentFailedEvent::class.java)
+      .to("direct:finishReservationSaga")
+
+    from("direct:finishReservationSaga")
+      .routeId("finishReservationSaga")
+      .process {
+        val event = it.message.body as PaymentEvent
+        reservationService.updateStatus(event)
+      }
   }
 }

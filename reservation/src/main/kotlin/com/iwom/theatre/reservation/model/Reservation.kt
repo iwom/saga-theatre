@@ -1,9 +1,13 @@
 package com.iwom.theatre.reservation.model
 
-data class Reservation(
-  val id: Int,
-  val name: String,
-  val status: ReservationStatus = ReservationStatus.PENDING
+import com.fasterxml.jackson.annotation.JsonProperty
+
+class Reservation(
+  @JsonProperty("id") val id: Int,
+  @JsonProperty("status") var status: ReservationStatus,
+  @JsonProperty("movieId") val movieId: Int,
+  @JsonProperty("userId") val userId: Int,
+  @JsonProperty("seats") val seats: Int
 )
 
 enum class ReservationStatus(val value: Int) {
@@ -12,6 +16,7 @@ enum class ReservationStatus(val value: Int) {
   DENIED(-1);
 
   companion object {
+    fun completable() = listOf(PENDING, CONFIRMED)
     val BY_VALUE = values().associateBy { it.value }
   }
 }

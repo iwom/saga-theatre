@@ -1,10 +1,8 @@
-package com.iwom.theatre.reservation.event
+package com.iwom.theatre.payment.event
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-sealed class ReservationEvent
-
-data class ReservationPendingEvent(
+data class PaymentSucceededEvent (
   @JsonProperty("id") val id: Int,
   @JsonProperty("userId") val userId: Int
-) : ReservationEvent()
+)
