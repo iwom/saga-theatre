@@ -6,6 +6,7 @@ import com.iwom.theatre.reservation.event.PaymentSucceededEvent
 import com.iwom.theatre.reservation.model.Movie
 import com.iwom.theatre.reservation.model.Reservation
 import com.iwom.theatre.reservation.model.ReservationStatus
+import com.iwom.theatre.reservation.model.Reservations
 import org.springframework.stereotype.Service
 
 @Service
@@ -18,7 +19,7 @@ class ReservationService {
 
   private fun reservationsById() = reservations.associateBy { it.id }
 
-  fun fetch() = reservations.toList()
+  fun fetch() = Reservations(data = reservations.toList(), total = reservations.size)
 
   fun create(movie: Movie, userId: Int, seats: Int): Reservation {
     val availableSeats: Int = movie.maxSeats - (confirmedReservationsByMovieId()[movie.id]?.sumBy { it.seats } ?: 0)

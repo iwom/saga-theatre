@@ -2,6 +2,11 @@ package com.iwom.theatre.reservation.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
+data class Reservations(
+  @JsonProperty("data") val data: List<Reservation>,
+  @JsonProperty("total") val total: Int,
+)
+
 class Reservation(
   @JsonProperty("id") val id: Int,
   @JsonProperty("status") var status: ReservationStatus,
@@ -17,6 +22,5 @@ enum class ReservationStatus(val value: Int) {
 
   companion object {
     fun completable() = listOf(PENDING, CONFIRMED)
-    val BY_VALUE = values().associateBy { it.value }
   }
 }

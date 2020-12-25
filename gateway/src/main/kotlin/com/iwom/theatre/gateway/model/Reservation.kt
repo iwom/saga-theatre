@@ -2,9 +2,14 @@ package com.iwom.theatre.gateway.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-class Reservation(
+data class Reservations(
+  @JsonProperty("data") val data: List<Reservation>,
+  @JsonProperty("total") val total: Int,
+)
+
+data class Reservation(
   @JsonProperty("id") val id: Int,
-  @JsonProperty("status") var status: ReservationStatus,
+  @JsonProperty("status") val status: ReservationStatus,
   @JsonProperty("movieId") val movieId: Int,
   @JsonProperty("userId") val userId: Int,
   @JsonProperty("seats") val seats: Int

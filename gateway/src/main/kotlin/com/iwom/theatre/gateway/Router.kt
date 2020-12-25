@@ -1,5 +1,9 @@
 package com.iwom.theatre.gateway
 
+import com.iwom.theatre.gateway.model.Movie
+import com.iwom.theatre.gateway.model.Movies
+import com.iwom.theatre.gateway.model.Reservation
+import com.iwom.theatre.gateway.model.Reservations
 import com.iwom.theatre.gateway.request.CreateReservationRequest
 import org.apache.camel.Exchange
 import org.apache.camel.builder.RouteBuilder
@@ -39,16 +43,19 @@ class Router : RouteBuilder() {
       .consumes("application/json")
       .bindingMode(RestBindingMode.auto)
       .type(CreateReservationRequest::class.java)
+      .outType(Reservation::class.java)
       .enableCORS(true)
       .to("direct:createReservation")
       .get("/reservations")
       .produces("application/json")
       .bindingMode(RestBindingMode.auto)
+      .outType(Reservations::class.java)
       .enableCORS(true)
       .to("direct:getReservations")
       .get("/movies")
       .produces("application/json")
       .bindingMode(RestBindingMode.auto)
+      .outType(Movies::class.java)
       .enableCORS(true)
       .to("direct:getMovies")
 

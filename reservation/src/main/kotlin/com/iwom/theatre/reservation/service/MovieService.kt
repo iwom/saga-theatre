@@ -1,6 +1,7 @@
 package com.iwom.theatre.reservation.service
 
 import com.iwom.theatre.reservation.model.Movie
+import com.iwom.theatre.reservation.model.Movies
 import org.springframework.stereotype.Service
 
 @Service
@@ -13,7 +14,7 @@ class MovieService {
 
   val moviesById = movies.associateBy { it.id }
 
-  fun fetch() = movies
+  fun fetch() = Movies(data = movies, total = movies.size)
 
   fun getById(id: Int) = moviesById[id] ?: throw MovieNotFoundException()
 }
