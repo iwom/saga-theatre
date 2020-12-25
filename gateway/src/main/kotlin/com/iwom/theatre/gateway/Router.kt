@@ -1,12 +1,13 @@
 package com.iwom.theatre.gateway
 
-import com.iwom.theatre.gateway.model.Movie
 import com.iwom.theatre.gateway.model.Movies
 import com.iwom.theatre.gateway.model.Reservation
 import com.iwom.theatre.gateway.model.Reservations
 import com.iwom.theatre.gateway.request.CreateReservationRequest
+import com.iwom.theatre.gateway.request.FetchPaymentsRequestBuilder
 import org.apache.camel.Exchange
 import org.apache.camel.builder.RouteBuilder
+import org.apache.camel.component.cxf.common.message.CxfConstants
 import org.apache.camel.model.dataformat.JsonLibrary
 import org.apache.camel.model.rest.RestBindingMode
 import org.springframework.beans.factory.annotation.Value
@@ -58,6 +59,11 @@ class Router : RouteBuilder() {
       .outType(Movies::class.java)
       .enableCORS(true)
       .to("direct:getMovies")
+      .get("/payments")
+      .produces("application/json")
+      .bindingMode(RestBindingMode.auto)
+      .enableCORS(true)
+      .to("direct:getPayments")
 
     from("direct:createReservation")
       .marshal().json(JsonLibrary.Jackson)
@@ -74,5 +80,17 @@ class Router : RouteBuilder() {
       .marshal().json(JsonLibrary.Jackson)
       .recipientList(simple("http://localhost:8000/camel/api/movies?bridgeEndpoint=true"))
       .unmarshal().json(JsonLibrary.Jackson)
+
+    from("direct:getPayments")
+      .tracing()
+      .bean(FetchPaymentsRequestBuilder::class.java)
+      .setHeader(CxfConstants.OPERATION_NAME, constant("fetchPayments"))
+      .setHeader(CxfConstants.OPERATION_NAMESPACE, constant("http://service.payment.theatre.iwom.com/"))
+
+      // Invoke our test service using CXF
+      .to("cxf://http://localhost:8010/soap-api/service/payment"
+        + "?serviceClass=com.iwom.theatre.payment.service.PaymentServiceService"
+        + "&wsdlURL=/wsdl/payment.wsdl")
+
   }
 }
