@@ -62,6 +62,12 @@ class Router : RouteBuilder() {
       .bindingMode(RestBindingMode.auto)
       .enableCORS(true)
       .to("direct:getReservations")
+      .get("/movies")
+      .produces(MediaType.APPLICATION_JSON)
+      .bindingMode(RestBindingMode.auto)
+      .enableCORS(true)
+      .to("direct:getMovies")
+
 
     from("direct:createReservation")
       .routeId("createReservation")
@@ -80,6 +86,14 @@ class Router : RouteBuilder() {
       .tracing()
       .process {
         it.message.body = reservationService.fetch()
+      }
+      .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(200))
+
+    from("direct:getMovies")
+      .routeId("getMovies")
+      .tracing()
+      .process {
+        it.message.body = movieService.fetch()
       }
       .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(200))
 

@@ -15,7 +15,9 @@ class ReservationService {
   private fun confirmedReservationsByMovieId() = reservations
     .filter { it.status in ReservationStatus.completable() }
     .groupBy { it.movieId }
+
   private fun reservationsById() = reservations.associateBy { it.id }
+
   fun fetch() = reservations.toList()
 
   fun create(movie: Movie, userId: Int, seats: Int): Reservation {
