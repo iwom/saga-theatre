@@ -2,17 +2,11 @@ package com.iwom.theatre.apigateway;
 
 import com.iwom.theatre.apigateway.model.CreateReservationRequest;
 import com.iwom.theatre.apigateway.model.Movies;
-import com.iwom.theatre.apigateway.model.PaymentRequestBuilder;
 import com.iwom.theatre.apigateway.model.Reservation;
 import com.iwom.theatre.apigateway.model.Reservations;
-import com.iwom.theatre.payment.service.FetchPayments;
-import com.iwom.theatre.payment.service.PaymentService;
-import org.apache.camel.CamelContext;
+import com.iwom.theatre.apigateway.payment.PaymentClient;
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.cxf.CxfEndpoint;
-import org.apache.camel.component.cxf.DataFormat;
-import org.apache.camel.component.cxf.common.message.CxfConstants;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.beans.factory.annotation.Value;
@@ -88,17 +82,21 @@ public class Router extends RouteBuilder {
       .recipientList(simple("http://localhost:8000/camel/api/movies?bridgeEndpoint=true"))
       .unmarshal().json(JsonLibrary.Jackson);
 
+//    from("timer://my-timer?fixedRate=true&period=1000")
+//      .tracing()
+//
+//      .setHeader(CxfConstants.OPERATION_NAME,
+//        constant("fetchPayments"))
+//      .setHeader(CxfConstants.OPERATION_NAMESPACE,
+//        constant("http://service.payment.theatre.iwom.com/"))
+//
+//      // Invoke our test service using CXF
+//      .to("cxf://http://localhost:8010/soap-api/service/payment?"
+//        + "?serviceClass=com.iwom.theatre.payment.service.PaymentService"
+//        + "&wsdlURL=/wsdl/payment.wsdl");
+
     from("timer://my-timer?fixedRate=true&period=1000")
       .tracing()
-
-      .setHeader(CxfConstants.OPERATION_NAME,
-        constant("fetchPayments"))
-      .setHeader(CxfConstants.OPERATION_NAMESPACE,
-        constant("http://service.payment.theatre.iwom.com/"))
-
-      // Invoke our test service using CXF
-      .to("cxf://http://localhost:8010/soap-api/service/payment?"
-        + "?serviceClass=com.iwom.theatre.payment.service.PaymentService"
-        + "&wsdlURL=/wsdl/payment.wsdl");
+      .bean(PaymentClient.class, "fetchPayments");
   }
 }
