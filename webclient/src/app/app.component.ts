@@ -4,6 +4,7 @@ import {Movie} from "./model/movie";
 import {FormControl, FormGroup} from "@angular/forms";
 import {interval, Subscription} from "rxjs";
 import {switchMap} from "rxjs/operators";
+import {Customer} from "./model/customer";
 
 
 @Component({
@@ -15,12 +16,15 @@ export class AppComponent implements OnInit, OnDestroy {
   movieColumns: string[] = ['id', 'name', 'year', 'price', 'maxSeats'];
   movieList: Movie[] = [];
   moviesTotal: number = 0;
-  movieSubscription: Subscription
 
   reservationColumns: string[] = ['id', 'status', 'movieId', 'seats'];
   reservationList: Movie[] = [];
   reservationsTotal: number = 0;
   reservationsSubscription: Subscription
+
+  customerColumns: string[] = ['id', 'cardNo'];
+  customerList: Customer[] = [];
+  customersTotal: number = 0;
 
   reservationForm = new FormGroup({
     movieId: new FormControl(null),
@@ -34,14 +38,18 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.movieSubscription = interval(1000)
-      .pipe(
-        switchMap(() => this.theatreService.fetchMovies())
-      )
+    this.theatreService.fetchMovies()
       .subscribe(
         data => {
           this.movieList = data["movies"]
           this.moviesTotal = data["total"]
+        }
+      )
+    this.theatreService.fetchCustomers()
+      .subscribe(
+        data => {
+          this.customerList = data["customers"]
+          this.customersTotal = data["total"]
         }
       )
 
@@ -59,7 +67,6 @@ export class AppComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.reservationsSubscription.unsubscribe()
-    this.movieSubscription.unsubscribe()
   }
 
   onSubmit(): void {

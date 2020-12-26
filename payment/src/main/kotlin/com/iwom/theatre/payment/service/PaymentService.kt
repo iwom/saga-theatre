@@ -13,5 +13,5 @@ class PaymentService {
   @Autowired
   private lateinit var repository: PaymentRepository
 
-  fun fetchPayments(): List<PaymentDetails> = repository.fetch()
+  fun fetchPayments(type: String?): List<PaymentDetails> = repository.fetch()
 }

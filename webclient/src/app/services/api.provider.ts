@@ -7,7 +7,8 @@ export class ApiProvider {
   paths = {
     root: () => `/`,
     movies: () => `${this.host}/camel/api/movies`,
-    reservations: () => `${this.host}/camel/api/reservations`
+    reservations: () => `${this.host}/camel/api/reservations`,
+    customers: () => `${this.host}/camel/api/customers`
   };
 
   go() {

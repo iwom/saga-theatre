@@ -1,118 +1,142 @@
+<div style="display: flex;">
+  <mat-card style="flex: 1 1 auto;">
+    <p>
+      <mat-toolbar>
+        <span>New Reservation</span>
+      </mat-toolbar>
+    </p>
 
-<mat-card>
+    <mat-card fxLayoutAlign="center" fxLayout="row">
 
-  <p>
-    <mat-toolbar>
-      <span>New Reservation</span>
-    </mat-toolbar>
-  </p>
+      <mat-card-content>
+        <form [formGroup]="reservationForm" (ngSubmit)="onSubmit()">
+          <p>
+            <mat-form-field>
+              <input matInput required placeholder="MovieId" formControlName="movieId">
+            </mat-form-field>
+          </p>
 
-  <mat-card fxLayoutAlign="center" fxLayout="row">
+          <p>
+            <mat-form-field>
+              <input required matInput placeholder="UserId" formControlName="userId">
+            </mat-form-field>
+          </p>
 
-    <mat-card-content>
-      <form [formGroup]="reservationForm" (ngSubmit)="onSubmit()">
-        <p>
-          <mat-form-field>
-            <input matInput required placeholder="MovieId" formControlName="movieId">
-          </mat-form-field>
-        </p>
-
-        <p>
-          <mat-form-field>
-            <input required matInput placeholder="UserId" formControlName="userId">
-          </mat-form-field>
-        </p>
-
-        <p>
-          <mat-form-field>
-            <input required matInput placeholder="Seats" formControlName="seats">
-          </mat-form-field>
-        </p>
+          <p>
+            <mat-form-field>
+              <input required matInput placeholder="Seats" formControlName="seats">
+            </mat-form-field>
+          </p>
 
 
-        <p fxLayout="row" fxLayoutAlign="center">
-          <button type="submit" mat-raised-button>Create Reservation</button>
-        </p>
+          <p fxLayout="row" fxLayoutAlign="center">
+            <button type="submit" mat-raised-button>Create Reservation</button>
+          </p>
 
-      </form>
-    </mat-card-content>
+        </form>
+      </mat-card-content>
 
+    </mat-card>
+  </mat-card>
+  <mat-card style="flex: 1 1 auto;">
+    <p>
+      <mat-toolbar>
+        <span>Reservations</span>
+      </mat-toolbar>
+    </p>
+
+
+    <table mat-table [dataSource]="reservationList" class="mat-elevation-z8">
+
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> Id</th>
+        <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef> Status</th>
+        <td mat-cell *matCellDef="let element"> {{element.status}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="movieId">
+        <th mat-header-cell *matHeaderCellDef> Movie Id</th>
+        <td mat-cell *matCellDef="let element"> {{element.movieId}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="seats">
+        <th mat-header-cell *matHeaderCellDef> Seats</th>
+        <td mat-cell *matCellDef="let element"> {{element.seats}} </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="reservationColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: reservationColumns;"></tr>
+    </table>
+  </mat-card>
+</div>
+
+<div style="display: flex;">
+
+  <mat-card style="flex: 1 1 auto;">
+    <p>
+      <mat-toolbar>
+        <span>Available Movies</span>
+      </mat-toolbar>
+    </p>
+
+    <table mat-table [dataSource]="movieList" class="mat-elevation-z8">
+
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> Id</th>
+        <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Title</th>
+        <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="year">
+        <th mat-header-cell *matHeaderCellDef> Year</th>
+        <td mat-cell *matCellDef="let element"> {{element.year}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef> Price</th>
+        <td mat-cell *matCellDef="let element"> {{element.price}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="maxSeats">
+        <th mat-header-cell *matHeaderCellDef> Seats</th>
+        <td mat-cell *matCellDef="let element"> {{element.maxSeats}} </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="movieColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: movieColumns;"></tr>
+    </table>
+  </mat-card>
+  <mat-card style="flex: 1 1 auto;">
+    <p>
+      <mat-toolbar>
+        <span>Customer Details</span>
+      </mat-toolbar>
+    </p>
+
+
+    <table mat-table [dataSource]="customerList" class="mat-elevation-z8">
+
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> Id</th>
+        <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="cardNo">
+        <th mat-header-cell *matHeaderCellDef> Card No.</th>
+        <td mat-cell *matCellDef="let element"> {{element.cardNo}} </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="customerColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: customerColumns;"></tr>
+    </table>
   </mat-card>
 
-  <div fxLayout="column">
-    <div>
-      <p>
-        <mat-toolbar>
-          <span>Available Movies</span>
-        </mat-toolbar>
-      </p>
-
-      <table mat-table [dataSource]="movieList" class="mat-elevation-z8">
-
-        <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef> Id</th>
-          <td mat-cell *matCellDef="let element"> {{element.id}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef> Title</th>
-          <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="year">
-          <th mat-header-cell *matHeaderCellDef> Year</th>
-          <td mat-cell *matCellDef="let element"> {{element.year}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="price">
-          <th mat-header-cell *matHeaderCellDef> Price</th>
-          <td mat-cell *matCellDef="let element"> {{element.price}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="maxSeats">
-          <th mat-header-cell *matHeaderCellDef> Seats</th>
-          <td mat-cell *matCellDef="let element"> {{element.maxSeats}} </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="movieColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: movieColumns;"></tr>
-      </table>
-    </div>
-    <div>
-      <p>
-        <mat-toolbar>
-          <span>Reservations</span>
-        </mat-toolbar>
-      </p>
-
-
-      <table mat-table [dataSource]="reservationList" class="mat-elevation-z8">
-
-        <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef> Id</th>
-          <td mat-cell *matCellDef="let element"> {{element.id}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="status">
-          <th mat-header-cell *matHeaderCellDef> Status</th>
-          <td mat-cell *matCellDef="let element"> {{element.status}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="movieId">
-          <th mat-header-cell *matHeaderCellDef> Movie Id</th>
-          <td mat-cell *matCellDef="let element"> {{element.movieId}} </td>
-        </ng-container>
-
-        <ng-container matColumnDef="seats">
-          <th mat-header-cell *matHeaderCellDef> Seats</th>
-          <td mat-cell *matCellDef="let element"> {{element.seats}} </td>
-        </ng-container>
-
-        <tr mat-header-row *matHeaderRowDef="reservationColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: reservationColumns;"></tr>
-      </table>
-    </div>
-  </div>
-
-</mat-card>
-
+</div>

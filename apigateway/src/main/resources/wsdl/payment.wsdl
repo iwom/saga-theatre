@@ -7,7 +7,9 @@
             <xs:element name="fetchPaymentsResponse" type="tns:fetchPaymentsResponse"/>
 
             <xs:complexType name="fetchPayments">
-                <xs:sequence/>
+                <xs:sequence>
+                    <xs:element minOccurs="0" name="arg0" type="xs:string"/>
+                </xs:sequence>
             </xs:complexType>
 
             <xs:complexType name="fetchPaymentsResponse">

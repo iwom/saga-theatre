@@ -5,6 +5,7 @@ import {Observable} from "rxjs";
 import {catchError, map} from "rxjs/operators";
 import {Movie} from "../model/movie";
 import {Reservation} from "../model/reservation";
+import {Customer} from "../model/customer";
 
 @Injectable({
   providedIn: 'root'
@@ -50,6 +51,30 @@ export class TheatreService {
         return {
           "reservations": reservations,
           "total": data["total"]
+        }
+      }),
+      catchError(err => {
+        console.error(err)
+        return err
+      })
+    )
+  }
+
+  public fetchCustomers(): Observable<any> {
+    return this.http.get(this.api.go().customers()).pipe(
+      map(data => {
+        const customers: Array<Customer> = [];
+        data["customers"].forEach(element => {
+          customers.push(
+            new Customer(
+              element["id"], element["cardNo"]
+            )
+          )
+        });
+        console.log(customers);
+        return {
+          "customers": customers,
+          "total": customers.length
         }
       }),
       catchError(err => {
