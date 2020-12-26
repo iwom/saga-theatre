@@ -1,0 +1,22 @@
+@startuml
+node docker {
+  node webclient
+  node apigateway
+  node payment
+  node reservation
+  node kafka {
+    queue reservation_created
+    queue payment_succeeded
+    queue payment_failed
+  }
+  webclient <--> apigateway : REST
+  apigateway <--> reservation : REST
+  apigateway <--> payment : SOAP
+  reservation --> reservation_created
+  payment <-- reservation_created
+  payment --> payment_succeeded
+  payment --> payment_failed
+  reservation <-- payment_succeeded
+  reservation <-- payment_failed
+}
+@enduml
