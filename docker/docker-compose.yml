@@ -27,6 +27,51 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: "127.0.0.1:2181"
     network_mode: "host"
 
+  reservation:
+    container_name: reservation
+    image: reservation-1.0
+    build:
+      context: ../reservation
+      dockerfile: Dockerfile
+    restart: on-failure
+    network_mode: "host"
+    depends_on:
+      - kafka
+
+  payment:
+    container_name: payment
+    image: payment-1.0
+    build:
+      context: ../payment
+      dockerfile: Dockerfile
+    restart: on-failure
+    network_mode: "host"
+    depends_on:
+      - kafka
+
+  apigateway:
+    container_name: apigateway
+    image: apigateway-1.0
+    build:
+      context: ../apigateway
+      dockerfile: Dockerfile
+    restart: on-failure
+    network_mode: "host"
+    depends_on:
+      - payment
+      - reservation
+
+  webclient:
+    container_name: webclient
+    image: webclient-1.0
+    build:
+      context: ../webclient
+      dockerfile: Dockerfile
+    restart: on-failure
+    network_mode: "host"
+    depends_on:
+      - apigateway
+
 volumes:
   zookeeper-data:
   zookeeper-datalog:

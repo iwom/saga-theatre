@@ -32,7 +32,6 @@ class Router : RouteBuilder() {
 
     from("kafka:reservation_events?brokers=localhost:9092")
       .routeId("processReservationCreated")
-      .tracing()
       .threads(10)
       .delay(5000)
       .unmarshal()

@@ -71,7 +71,6 @@ class Router : RouteBuilder() {
 
     from("direct:createReservation")
       .routeId("createReservation")
-      .tracing()
       .onCompletion().onCompleteOnly().to("direct:startReservationSaga").end()
       .process {
         val request = it.message.body as CreateReservationRequest
@@ -83,7 +82,6 @@ class Router : RouteBuilder() {
 
     from("direct:getReservations")
       .routeId("getReservations")
-      .tracing()
       .process {
         it.message.body = reservationService.fetch()
       }
@@ -91,7 +89,6 @@ class Router : RouteBuilder() {
 
     from("direct:getMovies")
       .routeId("getMovies")
-      .tracing()
       .process {
         it.message.body = movieService.fetch()
       }
