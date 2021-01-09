@@ -10,7 +10,9 @@ import com.iwom.theatre.reservation.model.Reservations
 import org.springframework.stereotype.Service
 
 @Service
-class ReservationService {
+class ReservationService (
+  private val movieService: MovieService
+) {
   private final var reservations = mutableListOf<Reservation>()
 
   private fun confirmedReservationsByMovieId() = reservations
@@ -22,7 +24,7 @@ class ReservationService {
   fun fetch() = Reservations(data = reservations.toList(), total = reservations.size)
 
   fun create(movie: Movie, userId: Int, seats: Int): Reservation {
-    val availableSeats: Int = movie.maxSeats - (confirmedReservationsByMovieId()[movie.id]?.sumBy { it.seats } ?: 0)
+    val availableSeats: Int = movie.seats - (confirmedReservationsByMovieId()[movie.id]?.sumBy { it.seats } ?: 0)
     if (availableSeats < seats) {
       throw ReservationValidationException()
     }
@@ -35,14 +37,21 @@ class ReservationService {
       seats = seats
     )
     reservations.add(reservation)
+    movie.seats -= seats
     return reservation
   }
 
   fun updateStatus(paymentEvent: PaymentEvent) {
     val reservation = reservationsById()[paymentEvent.id] ?: throw ReservationNotFoundException()
     when (paymentEvent) {
-      is PaymentSucceededEvent -> reservation.status = ReservationStatus.CONFIRMED
-      is PaymentFailedEvent -> reservation.status = ReservationStatus.DENIED
+      is PaymentSucceededEvent -> {
+        reservation.status = ReservationStatus.CONFIRMED
+      }
+      is PaymentFailedEvent -> {
+        reservation.status = ReservationStatus.DENIED
+        val movie = movieService.getById(id = reservation.movieId)
+        movieService.updateSeatsById(id = movie.id, seats = movie.seats + reservation.seats)
+      }
     }
   }
 }

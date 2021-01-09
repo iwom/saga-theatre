@@ -33,7 +33,7 @@ public class Router extends RouteBuilder {
       .port(serverPort)
       .enableCORS(true)
       .apiContextPath("/api-doc")
-      .apiProperty("api.title", "Test REST API")
+      .apiProperty("api.title", "Api gateway REST API")
       .apiProperty("api.version", "v1")
       .apiProperty("cors", "true")
       .apiContextRouteId("doc-api")

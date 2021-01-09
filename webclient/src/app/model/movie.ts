@@ -4,7 +4,7 @@ export class Movie {
     readonly name: string,
     readonly year: number,
     readonly price: number,
-    readonly maxSeats: number
+    readonly seats: number
   ) {
   }
 }

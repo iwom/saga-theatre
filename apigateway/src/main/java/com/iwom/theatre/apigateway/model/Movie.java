@@ -7,7 +7,7 @@ public class Movie {
   @JsonProperty("name") private String name;
   @JsonProperty("year") private Integer year;
   @JsonProperty("price") private Integer price;
-  @JsonProperty("maxSeats") private Integer maxSeats;
+  @JsonProperty("seats") private Integer seats;
 
   public Integer getId() {
     return id;
@@ -41,11 +41,11 @@ public class Movie {
     this.price = price;
   }
 
-  public Integer getMaxSeats() {
-    return maxSeats;
+  public Integer getSeats() {
+    return seats;
   }
 
-  public void setMaxSeats(Integer maxSeats) {
-    this.maxSeats = maxSeats;
+  public void setSeats(Integer seats) {
+    this.seats = seats;
   }
 }

@@ -21,7 +21,7 @@ export class TheatreService {
         data["data"].forEach(element => {
           movies.push(
             new Movie(
-              element["id"], element["name"], element["year"], element["price"], element["maxSeats"]
+              element["id"], element["name"], element["year"], element["price"], element["seats"]
             )
           )
         });

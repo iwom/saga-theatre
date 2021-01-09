@@ -13,9 +13,10 @@ import {Customer} from "./model/customer";
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit, OnDestroy {
-  movieColumns: string[] = ['id', 'name', 'year', 'price', 'maxSeats'];
+  movieColumns: string[] = ['id', 'name', 'year', 'price', 'seats'];
   movieList: Movie[] = [];
   moviesTotal: number = 0;
+  moviesSubscription: Subscription
 
   reservationColumns: string[] = ['id', 'status', 'movieId', 'seats'];
   reservationList: Movie[] = [];
@@ -38,13 +39,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.theatreService.fetchMovies()
-      .subscribe(
-        data => {
-          this.movieList = data["movies"]
-          this.moviesTotal = data["total"]
-        }
-      )
     this.theatreService.fetchCustomers()
       .subscribe(
         data => {
@@ -63,10 +57,21 @@ export class AppComponent implements OnInit, OnDestroy {
           this.reservationsTotal = data["total"]
         }
       )
+    this.moviesSubscription = interval(1000)
+      .pipe(
+        switchMap(() => this.theatreService.fetchMovies())
+      )
+      .subscribe(
+        data => {
+          this.movieList = data["movies"]
+          this.moviesTotal = data["total"]
+        }
+      )
   }
 
   ngOnDestroy() {
     this.reservationsSubscription.unsubscribe()
+    this.moviesSubscription.unsubscribe()
   }
 
   onSubmit(): void {
