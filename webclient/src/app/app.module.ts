@@ -13,6 +13,7 @@ import {ApiProvider} from "./services/api.provider";
 import {AngularMaterialModule} from './modules/material.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {TheatreService} from "./services/theatre.service";
+import {MatSelectModule} from "@angular/material/select";
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import {TheatreService} from "./services/theatre.service";
     ReactiveFormsModule,
     AngularMaterialModule,
     FlexModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MatSelectModule
   ],
   providers: [ApiProvider, TheatreService],
   bootstrap: [AppComponent],

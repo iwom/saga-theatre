@@ -12,13 +12,23 @@
         <form [formGroup]="reservationForm" (ngSubmit)="onSubmit()">
           <p>
             <mat-form-field>
-              <input matInput required placeholder="MovieId" formControlName="movieId">
+              <mat-label>Movie</mat-label>
+              <mat-select formControlName="movieId">
+                <mat-option *ngFor="let movie of staticMovieList" [value]="movie.id">
+                  {{movie.name}}
+                </mat-option>
+              </mat-select>
             </mat-form-field>
           </p>
 
           <p>
             <mat-form-field>
-              <input required matInput placeholder="UserId" formControlName="userId">
+              <mat-label>Customer</mat-label>
+              <mat-select formControlName="userId">
+                <mat-option *ngFor="let customer of staticCustomerList" [value]="customer.id">
+                  {{customer.name}}
+                </mat-option>
+              </mat-select>
             </mat-form-field>
           </p>
 

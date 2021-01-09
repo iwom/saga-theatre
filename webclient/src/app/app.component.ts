@@ -16,6 +16,7 @@ import {Reservation} from "./model/reservation";
 export class AppComponent implements OnInit, OnDestroy {
   movieColumns: string[] = ['id', 'name', 'year', 'price', 'seats'];
   movieList: Movie[] = [];
+  staticMovieList: Movie[] = [];
   moviesById: Map<number, Movie>;
   moviesTotal: number = 0;
 
@@ -26,6 +27,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   customerColumns: string[] = ['id', 'name', 'limit', 'total'];
   customerList: Customer[] = [];
+  staticCustomerList: Customer[] = [];
   customersById : Map<number, Customer>;
   customersTotal: number = 0;
 
@@ -42,6 +44,12 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.theatreService.fetchCustomers().subscribe(data => {
+      this.staticCustomerList = data["customers"]
+    })
+    this.theatreService.fetchMovies().subscribe(data => {
+      this.staticMovieList = data["movies"]
+    })
     this.reservationsSubscription = interval(1000)
       .pipe(
         switchMap(() => this.theatreService.fetchCustomers()),

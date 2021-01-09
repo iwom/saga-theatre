@@ -87,6 +87,7 @@ export class TheatreService {
   }
 
   public createReservation(data: any): Observable<any> {
+    console.log(data)
     return this.http.post(this.api.go().reservations(), data)
   }
 }
