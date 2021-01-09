@@ -5,6 +5,8 @@ import com.iwom.theatre.payment.event.PaymentSucceededEvent
 import com.iwom.theatre.payment.event.ReservationPendingEvent
 import com.iwom.theatre.payment.repository.PaymentNotFoundException
 import com.iwom.theatre.payment.repository.PaymentRepository
+import com.iwom.theatre.payment.service.PaymentProcessor
+import com.iwom.theatre.payment.service.PaymentValidationException
 import org.apache.camel.builder.RouteBuilder
 import org.apache.camel.model.dataformat.JsonLibrary
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,10 +16,10 @@ import org.springframework.stereotype.Component
 class Router : RouteBuilder() {
 
   @Autowired
-  lateinit var repository: PaymentRepository
+  lateinit var processor: PaymentProcessor
 
   override fun configure() {
-    onException(PaymentNotFoundException::class.java)
+    onException(PaymentValidationException::class.java)
       .handled(true)
       .process {
         val event = it.message.body as ReservationPendingEvent
@@ -38,7 +40,7 @@ class Router : RouteBuilder() {
       .json(JsonLibrary.Jackson, ReservationPendingEvent::class.java)
       .process {
         val event = it.message.body as ReservationPendingEvent
-        repository.validatePaymentByUserId(event.userId)
+        processor.processPayment(event.userId, event.price)
         it.message.body = PaymentSucceededEvent(
           id = event.id,
           userId = event.userId

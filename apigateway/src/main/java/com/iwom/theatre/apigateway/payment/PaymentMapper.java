@@ -15,7 +15,9 @@ public class PaymentMapper {
     paymentsResponse.getReturn().forEach(details ->
       customerList.add(new Customer(
         details.getUserId(),
-        details.getCreditCardNo()
+        details.getName(),
+        details.getLimit(),
+        details.getTotal()
       )));
     return new Customers(customerList);
   }

@@ -20,7 +20,9 @@
 
             <xs:complexType final="extension restriction" name="paymentDetails">
                 <xs:sequence>
-                    <xs:element minOccurs="0" name="creditCardNo" type="xs:string"/>
+                    <xs:element name="limit" type="xs:int"/>
+                    <xs:element minOccurs="0" name="name" type="xs:string"/>
+                    <xs:element name="total" type="xs:int"/>
                     <xs:element name="userId" type="xs:int"/>
                 </xs:sequence>
             </xs:complexType>

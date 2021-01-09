@@ -102,7 +102,8 @@ class Router : RouteBuilder() {
         val reservation = it.message.body as Reservation
         it.message.body = ReservationPendingEvent(
           id = reservation.id,
-          userId = reservation.userId
+          userId = reservation.userId,
+          price = reservation.price
         )
       }
       .marshal()

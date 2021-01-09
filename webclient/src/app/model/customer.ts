@@ -1,7 +1,9 @@
 export class Customer {
   constructor(
     readonly id: number,
-    readonly cardNo: string
+    readonly name: string,
+    readonly limit: number,
+    readonly total: number,
   ) {
   }
 }

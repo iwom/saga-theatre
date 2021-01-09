@@ -2,9 +2,10 @@ export class Reservation {
   constructor(
     readonly id: number,
     readonly status: string,
-    readonly movieId: number,
-    readonly userId: number,
-    readonly seats: number
+    readonly movie: string,
+    readonly user: string,
+    readonly seats: number,
+    readonly price: number,
   ) {
   }
 }

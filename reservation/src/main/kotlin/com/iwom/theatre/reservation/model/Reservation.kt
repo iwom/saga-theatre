@@ -12,7 +12,8 @@ class Reservation(
   @JsonProperty("status") var status: ReservationStatus,
   @JsonProperty("movieId") val movieId: Int,
   @JsonProperty("userId") val userId: Int,
-  @JsonProperty("seats") val seats: Int
+  @JsonProperty("seats") val seats: Int,
+  @JsonProperty("price") val price: Int
 )
 
 enum class ReservationStatus(val value: Int) {

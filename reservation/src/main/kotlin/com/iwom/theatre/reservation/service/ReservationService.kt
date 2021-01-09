@@ -34,7 +34,8 @@ class ReservationService (
       status = ReservationStatus.PENDING,
       movieId = movie.id,
       userId = userId,
-      seats = seats
+      seats = seats,
+      price = movie.price * seats
     )
     reservations.add(reservation)
     movie.seats -= seats

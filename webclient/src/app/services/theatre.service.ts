@@ -37,14 +37,17 @@ export class TheatreService {
     )
   }
 
-  public fetchReservations(): Observable<any> {
+  public fetchReservations(moviesById: Map<number, Movie>, customersById: Map<number, Customer>): Observable<any> {
     return this.http.get(this.api.go().reservations()).pipe(
       map(data => {
         const reservations: Array<Reservation> = [];
+        console.log(data["data"])
+        console.log(moviesById);
+        console.log(customersById);
         data["data"].forEach(element => {
           reservations.push(
             new Reservation(
-              element["id"], element["status"], element["movieId"], element["userId"], element["seats"]
+              element["id"], element["status"], moviesById.get(element["movieId"]).name, customersById.get(element["userId"]).name, element["seats"], element["price"]
             )
           )
         });
@@ -67,11 +70,10 @@ export class TheatreService {
         data["customers"].forEach(element => {
           customers.push(
             new Customer(
-              element["id"], element["cardNo"]
+              element["id"], element["name"], element["limit"], element["total"]
             )
           )
         });
-        console.log(customers);
         return {
           "customers": customers,
           "total": customers.length
